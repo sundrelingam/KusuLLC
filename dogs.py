@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 
 securities = pd.read_csv("securities.csv")
-data = securities.iloc[:10,:].copy()
+data = securities.copy()
 
 def get_movement(x, days = 2):
     period = f"{days}d"
@@ -22,14 +22,17 @@ def q10(x):
 
 dogs = data.groupby("GICS Sector").agg({'pct_chg': [np.mean, q10]})
 dogs.columns = dogs.columns.droplevel()
+dogs = dogs.eval("metric = mean - q10")
 
-dogs = dogs.sort_values(['mean', 'q10'], ascending=[False, True])
+dogs = dogs.sort_values(['metric'], ascending=[False])
+
+print(dogs.head())
 sector = dogs.first_valid_index()
 
 def picks(df, sector):
     filtered = df[df["GICS Sector"] == sector]
     q = q10(filtered.pct_chg)
-    res = filtered[filtered.pct_chg <= q]["Ticker symbol"]
+    res = filtered[filtered.pct_chg <= q][["Ticker symbol", "pct_chg"]]
 
     return(res)
 

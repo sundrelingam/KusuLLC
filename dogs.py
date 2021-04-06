@@ -24,6 +24,8 @@ dogs = data.groupby("GICS Sector").agg({'pct_chg': [np.mean, q10]})
 dogs.columns = dogs.columns.droplevel()
 dogs = dogs.eval("metric = mean - q10")
 
+dogs = pd.eval("dogs[dogs['mean'] >= 0]")
+
 dogs = dogs.sort_values(['metric'], ascending=[False])
 
 print(dogs.head())

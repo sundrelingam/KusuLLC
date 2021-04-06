@@ -9,7 +9,7 @@ def get_movement(x, days = 2):
     period = f"{days}d"
     yfdata = yf.download(tickers=x, period=period, interval='1d')
     try:
-        res = yfdata.iloc[0,:].Close/yfdata.iloc[-1,:].Close - 1
+        res = yfdata.iloc[-1,:].Close/yfdata.iloc[0,:].Close - 1
     except:
         res = np.nan
 

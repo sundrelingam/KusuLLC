@@ -8,10 +8,11 @@ from torch.utils.data import DataLoader, SequentialSampler
 from torch.utils.data import TensorDataset
 import numpy as np
 from getpass import getpass
+import os
 
 
 class Sentiment:
-    def __init__(self, model: str = './pretrained_SA_model/'):
+    def __init__(self, model: str = os.path.join(os.getcwd(), 'models', 'pretrained_SA_model')):
         self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.batch_size = 32
         self._model = BertForSequenceClassification.from_pretrained(model)
@@ -123,4 +124,4 @@ class Sentiment:
 
 if __name__ == '__main__':
     sentiment = Sentiment()
-    sentiment.analyze('MSFT')
+    sentiment.analyze('PINS')

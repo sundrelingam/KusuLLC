@@ -1,7 +1,7 @@
-
+# @TODO refactor
 import pandas as pd
 
-df = pd.read_csv('stock_data.csv')
+df = pd.read_csv('.\\data\\stock_data.csv')
 
 sentences = df.Text.values
 labels = df.Sentiment.values

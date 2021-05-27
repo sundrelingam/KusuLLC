@@ -3,3 +3,4 @@ models/pretrained_FA_model/
 venv/
 .idea/
 __pycache__/
+models/data/*.csv

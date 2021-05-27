@@ -11,12 +11,9 @@ from getpass import getpass
 
 
 class Sentiment:
-    def __init__(self, ticker: str = None, model: str = './pretrained_SA_model/'):
-        self._ticker = ticker
-        self._name = Sentiment.get_symbol(ticker)
+    def __init__(self, model: str = './pretrained_SA_model/'):
         self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.batch_size = 32
-
         self._model = BertForSequenceClassification.from_pretrained(model)
         self._tokenizer = BertTokenizer.from_pretrained(model)
 
@@ -30,7 +27,7 @@ class Sentiment:
             if x['symbol'] == symbol:
                 return x['name']
 
-    def reddit(self):
+    def reddit(self, ticker, name):
         self._client_id = getpass(prompt='Client ID:')
         self._client_secret = getpass(prompt='Client Secret:')
         self._user_agent = getpass(prompt='User Agent:')
@@ -44,13 +41,13 @@ class Sentiment:
 
         subreddits = 'stocks+options+wallstreetbets'
 
-        posts = reddit_api.subreddit(subreddits).search(query=self._ticker + ' OR ' + self._name, sort='hot')
+        posts = reddit_api.subreddit(subreddits).search(query=ticker + ' OR ' + name, sort='hot')
 
         self._posts = [post.title for post in posts]
 
-    def google(self):
+    def google(self, ticker):
         news = GoogleNews(period='1d')
-        news.get_news(self._ticker) # @TODO how to also accomodate full name (case insensitive)
+        news.get_news(ticker) # @TODO how to also accomodate full name (case insensitive)
         self._news = news.get_texts()
 
     def bert_preprocessing(self, sentences):
@@ -107,14 +104,17 @@ class Sentiment:
 
         print(f"{np.round(np.mean(res), 4) * 100}% positive on {len(res)} posts")
 
-    def analyze(self):
-        self.reddit()
+    def analyze(self, ticker):
+        self._ticker = ticker
+        self._name = Sentiment.get_symbol(ticker)
+
+        self.reddit(self._ticker, self._name)
         input_ids, attention_masks = self.bert_preprocessing(self._posts)
         dataloader = self.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING REDDIT POSTS ###")
         self.eval(dataloader)
 
-        self.google()
+        self.google(self._ticker)
         input_ids, attention_masks = self.bert_preprocessing(self._news)
         dataloader = self.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING GOOGLE NEWS ###")

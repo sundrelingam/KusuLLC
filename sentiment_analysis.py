@@ -122,5 +122,5 @@ class Sentiment:
 
 
 if __name__ == '__main__':
-    sentiment = Sentiment('MSFT')
-    sentiment.analyze()
+    sentiment = Sentiment()
+    sentiment.analyze('MSFT')

@@ -1,6 +1,5 @@
 models/pretrained_SA_model/
 models/pretrained_FA_model/
-models/data/
 venv/
 .idea/
 _pycache_/

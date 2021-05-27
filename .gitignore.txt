@@ -1,1 +1,2 @@
 pretrained_SA_model/
+venv/

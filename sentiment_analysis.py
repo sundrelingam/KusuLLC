@@ -7,17 +7,18 @@ import torch
 from torch.utils.data import DataLoader, SequentialSampler
 from torch.utils.data import TensorDataset
 import numpy as np
+from getpass import getpass
+
 
 class Sentiment:
     def __init__(self, ticker: str = None, model: str = './pretrained_SA_model/'):
         self._ticker = ticker
-        self._name = Hydra.get_symbol(ticker)
+        self._name = Sentiment.get_symbol(ticker)
         self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.batch_size = 32
 
-        if SA_model is not None:
-            self._model = BertForSequenceClassification.from_pretrained(SA_model)
-            self._tokenizer = BertTokenizer.from_pretrained(SA_model)
+        self._model = BertForSequenceClassification.from_pretrained(model)
+        self._tokenizer = BertTokenizer.from_pretrained(model)
 
     @staticmethod
     def get_symbol(symbol):
@@ -30,9 +31,9 @@ class Sentiment:
                 return x['name']
 
     def reddit(self):
-        self._client_id = input("Client ID:")
-        self._client_secret = input("Client Secret:")
-        self._user_agent = input("User Agent:")
+        self._client_id = getpass(prompt='Client ID:')
+        self._client_secret = getpass(prompt='Client Secret:')
+        self._user_agent = getpass(prompt='User Agent:')
         self._reddit = True
 
         reddit_api = praw.Reddit(
@@ -62,7 +63,6 @@ class Sentiment:
                 padding='max_length',
                 truncation=True,
                 max_length=64,
-                #pad_to_max_length=True,
                 return_attention_mask=True,
                 return_tensors='pt'
             )
@@ -119,6 +119,7 @@ class Sentiment:
         dataloader = self.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING GOOGLE NEWS ###")
         self.eval(dataloader)
+
 
 if __name__ == '__main__':
     sentiment = Sentiment('MSFT')

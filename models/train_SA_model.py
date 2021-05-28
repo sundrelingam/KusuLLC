@@ -12,7 +12,7 @@ from transformers import BertForSequenceClassification, AdamW
 from transformers import get_linear_schedule_with_warmup
 
 
-class SA_Trainer:
+class SentimentTrainer:
     def __init__(self, data=os.path.join(os.getcwd(), 'data', 'stock_data.csv')):
         df = pd.read_csv(data)
         self._sentences = df.Text.values
@@ -22,7 +22,7 @@ class SA_Trainer:
         self._batch_size = 32
         self._epochs = 2
 
-        SA_Trainer.set_seed()
+        SentimentTrainer.set_seed()
 
         print('Loading BERT tokenizer...')
         self._tokenizer = BertTokenizer.from_pretrained('bert-base-uncased', do_lower_case=True)
@@ -115,7 +115,7 @@ class SA_Trainer:
 
             # Progress update every 40 batches.
             if step % 40 == 0 and not step == 0:
-                elapsed = SA_Trainer.format_time(time.time() - t0)
+                elapsed = SentimentTrainer.format_time(time.time() - t0)
                 print('  Batch {:>5,}  of  {:>5,}.    Elapsed: {:}.'.format(step, len(dataloader), elapsed))
 
             b_input_ids = batch[0].to(self._device)
@@ -143,7 +143,7 @@ class SA_Trainer:
             scheduler.step()
 
         avg_train_loss = total_train_loss / len(dataloader)
-        training_time = SA_Trainer.format_time(time.time() - t0)
+        training_time = SentimentTrainer.format_time(time.time() - t0)
 
         return avg_train_loss, training_time
 
@@ -181,19 +181,19 @@ class SA_Trainer:
             logits = logits.detach().cpu().numpy()
             label_ids = b_labels.to('cpu').numpy()
 
-            total_eval_accuracy += SA_Trainer.flat_accuracy(logits, label_ids)
+            total_eval_accuracy += SentimentTrainer.flat_accuracy(logits, label_ids)
 
         avg_val_accuracy = total_eval_accuracy / len(dataloader)
         print("  Accuracy: {0:.2f}".format(avg_val_accuracy))
 
         avg_val_loss = total_eval_loss / len(dataloader)
-        validation_time = SA_Trainer.format_time(time.time() - t0)
+        validation_time = SentimentTrainer.format_time(time.time() - t0)
 
         return avg_val_loss, validation_time
 
     def train(self):
         input_ids, attention_masks, labels = self._tokenize()
-        train_dataset, val_dataset = SA_Trainer.create_datasets(input_ids, attention_masks, labels)
+        train_dataset, val_dataset = SentimentTrainer.create_datasets(input_ids, attention_masks, labels)
         train_dataloader = self._create_dataloader(train_dataset)
         val_dataloader = self._create_dataloader(val_dataset)
 

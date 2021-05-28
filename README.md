@@ -1,26 +1,22 @@
 # KusuLLC
 
-1. Download pretrained model from release `0.0.0`: 
+## Getting Started
 
-    a) https://github.com/sundrelingam/KusuLLC/releases/tag/0.0.0
+1. `$git clone https://github.com/sundrelingam/KusuLLC.git`.
+		* Create a Python virtual enivornment with (optional):
 
-    b) Save to folder "pretrained_SA_model" under parent folder.
+				```
+				python -m venv /some/path
+				source /some/path/bin/activate
+				```
 
-2. Get Reddit API credentials: 
+2. Install DVC [for your operating system](https://dvc.org/doc/install).
+3. Add remote storage with `$git remote add -d storage gdrive://xyz`. Please contact @sundrelingam for access to remote storage.
+4. `$dvc pull`.
+5. Install required packages:
 
-    https://towardsdatascience.com/scraping-reddit-data-1c0af3040768
+		```
+		pip install -r requirements.txt
+		```
 
-3. Create a Python virtual enivornment with (optional):
-
-```
-python -m venv /some/path
-source /some/path/bin/activate
-```
-
-4. Install required packages:
-
-```
-pip install -r requirements.txt
-```
-
-5. Run `main.py`.
+## More Coming Soon...

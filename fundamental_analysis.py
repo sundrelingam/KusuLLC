@@ -4,7 +4,7 @@ import pandas as pd
 import pickle
 
 
-class Fundamental:
+class Fundamentals:
     def __init__(
             self,
             model: str = os.path.join(os.getcwd(), 'models', 'pretrained_FA_model', 'rf_model.pkl'),
@@ -23,7 +23,7 @@ class Fundamental:
 
         return data
 
-    def analyze_fundamentals(self, ticker: str):
+    def analyze(self, ticker: str):
         print(f'### ANALYZING FUNDAMENTAL DATA FOR {ticker}')
 
         raw = self._data[self._data['Ticker'] == ticker]
@@ -41,5 +41,4 @@ class Fundamental:
 
 
 if __name__ == '__main__':
-    model = Fundamental()
-    model.analyze_fundamentals('PINS')
+    Fundamentals().analyze('PINS')

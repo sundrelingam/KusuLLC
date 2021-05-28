@@ -4,6 +4,7 @@ import numpy as np
 import os
 import praw
 import requests
+from tqdm import tqdm
 from transformers import BertTokenizer
 from transformers import BertForSequenceClassification
 import torch
@@ -84,7 +85,7 @@ class Sentiment:
         self._model.eval()
         predictions = []
 
-        for batch in dataloader:
+        for batch in tqdm(dataloader):
             batch = tuple(t.to(self._device) for t in batch)
             b_input_ids, b_input_mask = batch
 
@@ -123,5 +124,4 @@ class Sentiment:
 
 
 if __name__ == '__main__':
-    sentiment = Sentiment()
-    sentiment.analyze('PINS')
+    Sentiment().analyze('PINS')

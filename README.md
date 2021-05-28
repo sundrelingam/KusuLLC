@@ -11,11 +11,7 @@
 		source /some/path/bin/activate
 		```
 		
-	b) Install required packages:
-
-		```
-		pip install -r requirements.txt
-		```
+	b) Install required packages with `$pip install -r requirements.txt`
 
 2. Install DVC [for your operating system](https://dvc.org/doc/install).
 3. Add remote storage with `$git remote add -d storage gdrive://xyz`. Please contact @sundrelingam for access to remote storage.

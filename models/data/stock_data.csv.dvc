@@ -1,0 +1,4 @@
+outs:
+- md5: d4f9980451e02895904485d288a010f4
+  size: 479968
+  path: stock_data.csv

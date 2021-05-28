@@ -1,0 +1,4 @@
+outs:
+- md5: 7ddc2b34728d61b2c7e4e849e280fa94
+  size: 61381
+  path: securities.csv

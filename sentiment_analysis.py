@@ -1,14 +1,14 @@
-import requests
-import praw
+from getpass import getpass
 from GoogleNews import GoogleNews
+import numpy as np
+import os
+import praw
+import requests
 from transformers import BertTokenizer
 from transformers import BertForSequenceClassification
 import torch
 from torch.utils.data import DataLoader, SequentialSampler
 from torch.utils.data import TensorDataset
-import numpy as np
-from getpass import getpass
-import os
 
 
 class Sentiment:
@@ -28,11 +28,10 @@ class Sentiment:
             if x['symbol'] == symbol:
                 return x['name']
 
-    def reddit(self, ticker, name):
+    def _reddit(self):
         self._client_id = getpass(prompt='Client ID:')
         self._client_secret = getpass(prompt='Client Secret:')
         self._user_agent = getpass(prompt='User Agent:')
-        self._reddit = True
 
         reddit_api = praw.Reddit(
             client_id=self._client_id,
@@ -42,16 +41,16 @@ class Sentiment:
 
         subreddits = 'stocks+options+wallstreetbets'
 
-        posts = reddit_api.subreddit(subreddits).search(query=ticker + ' OR ' + name, sort='hot')
+        posts = reddit_api.subreddit(subreddits).search(query=self._ticker + ' OR ' + self._name, sort='hot')
 
         self._posts = [post.title for post in posts]
 
-    def google(self, ticker):
+    def _google(self):
         news = GoogleNews(period='1d')
-        news.get_news(ticker) # @TODO how to also accomodate full name (case insensitive)
+        news.get_news(self._ticker) # @TODO how to also accomodate full name (case insensitive)
         self._news = news.get_texts()
 
-    def bert_preprocessing(self, sentences):
+    def _bert_preprocessing(self, sentences):
         input_ids = []
         attention_masks = []
 
@@ -73,14 +72,15 @@ class Sentiment:
 
         return input_ids, attention_masks
 
-    def create_datasets(self, input_ids, attention_masks, batch_size):
+    @staticmethod
+    def create_datasets(input_ids, attention_masks, batch_size):
         data = TensorDataset(input_ids, attention_masks)
         sampler = SequentialSampler(data)
         dataloader = DataLoader(data, sampler=sampler, batch_size=batch_size)
 
         return dataloader
 
-    def eval(self, dataloader):
+    def _eval(self, dataloader):
         self._model.eval()
         predictions = []
 
@@ -109,17 +109,17 @@ class Sentiment:
         self._ticker = ticker
         self._name = Sentiment.get_symbol(ticker)
 
-        self.reddit(self._ticker, self._name)
-        input_ids, attention_masks = self.bert_preprocessing(self._posts)
-        dataloader = self.create_datasets(input_ids, attention_masks, self.batch_size)
+        self._reddit()
+        input_ids, attention_masks = self._bert_preprocessing(self._posts)
+        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING REDDIT POSTS ###")
-        self.eval(dataloader)
+        self._eval(dataloader)
 
-        self.google(self._ticker)
-        input_ids, attention_masks = self.bert_preprocessing(self._news)
-        dataloader = self.create_datasets(input_ids, attention_masks, self.batch_size)
+        self._google()
+        input_ids, attention_masks = self._bert_preprocessing(self._news)
+        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING GOOGLE NEWS ###")
-        self.eval(dataloader)
+        self._eval(dataloader)
 
 
 if __name__ == '__main__':

@@ -1,7 +1,7 @@
-import pandas as pd
 import numpy as np
-import pickle
 import os
+import pandas as pd
+import pickle
 
 
 class Fundamental:
@@ -17,10 +17,9 @@ class Fundamental:
             self._imputer = pickle.load(fp)
         self._data = pd.read_csv(data)
 
-    @staticmethod
-    def preprocess(data, imputer):
+    def _preprocess(self, data):
         data = data.drop(['Ticker', 'Market Capitalization'], axis=1)
-        data = pd.DataFrame(imputer.transform(data), columns=data.columns)
+        data = pd.DataFrame(self._imputer.transform(data), columns=data.columns)
 
         return data
 
@@ -29,7 +28,7 @@ class Fundamental:
 
         raw = self._data[self._data['Ticker'] == ticker]
         actual = raw['Market Capitalization']
-        preprocessed = Fundamental.preprocess(raw, self._imputer)
+        preprocessed = self._preprocess(raw)
 
         ratio = self._model.predict(preprocessed) / actual
 

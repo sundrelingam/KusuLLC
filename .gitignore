@@ -1,5 +1,7 @@
 models/pretrained_SA_model/
+!models/pretrained_SA_model/*.dvc
 models/pretrained_FA_model/
+!models/pretrained_FA_model/*.dvc
 venv/
 .idea/
 __pycache__/

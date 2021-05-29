@@ -1,4 +1,4 @@
 outs:
-- md5: e944e7714a1099926bd3a3986c274f47
-  size: 101420057
+- md5: b33dc3abc88d65556a3347fe4da65ecb
+  size: 10798868
   path: rf_model.pkl

@@ -6,11 +6,11 @@ This project uses [DVC](https://dvc.org/) for model and data version control.
 
 1. `$git clone https://github.com/sundrelingam/KusuLLC.git`.
 
-    a) Create a Python virtual enivornment with (optional):
+    a) From the top level directory of the repository, create a Python virtual enivornment with (optional):
 
 		```
-		python -m venv /some/path
-		source /some/path/bin/activate
+		$cd \path\to\KusuLLC
+		$python -m venv \path\to\venv
 		```
 		
 	b) Install required packages with `$pip install -r requirements.txt`
@@ -20,6 +20,15 @@ This project uses [DVC](https://dvc.org/) for model and data version control.
 4. `$dvc pull`.
 
 ## Getting Started
+
+Follow these steps to run the modules. The instructions are given for Windows:
+
+1. Activate the virtual environment with `$\path\to\venv\Scripts\activate`
+2. Run models such as:
+
+```
+$python -c "from sentiment_analysis import Sentiment; Sentiment().analyze('PINS')"
+```
 
 This repository has 2 models for evaluating your stock picks.
 

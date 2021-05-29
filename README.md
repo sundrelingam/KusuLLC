@@ -42,4 +42,4 @@ The module can be run as follows: `Sentiment().analyze("PINS")`.
 
 This module can be run as follows: `Fundamentals().analyze("PINS")`.
 
-This module relies on data from `SimFin` which is downloaded to the `./models/data/simfin` directory. If you do not want to re-pull this data and write it to disk, use `Fundamentals().analyze("PINS" update_data=False)`.
+This module relies on data from `SimFin` which is downloaded to the `./models/data/simfin` directory. If you do not want to re-pull this data and write it to disk, use `Fundamentals().analyze("PINS", update_data=False)`.

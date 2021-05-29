@@ -1,3 +1,4 @@
+from models.data.fundamental_data import FundamentalData
 import numpy as np
 import os
 import pandas as pd
@@ -23,7 +24,11 @@ class Fundamentals:
 
         return data
 
-    def analyze(self, ticker: str):
+    def analyze(self, ticker: str, update_data: bool = True):
+        if update_data:
+            print(f'### UPDATING DATA')
+            FundamentalData(os.path.join(os.getcwd(), 'models', 'data')).update()
+
         print(f'### ANALYZING FUNDAMENTAL DATA FOR {ticker}')
 
         raw = self._data[self._data['Ticker'] == ticker]

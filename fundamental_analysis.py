@@ -16,7 +16,8 @@ class Fundamentals:
             self._model = pickle.load(fp)
         with open(imputer, 'rb') as fp:
             self._imputer = pickle.load(fp)
-        self._data = pd.read_csv(data)
+
+        self._data_path = data
 
     def _preprocess(self, data):
         data = data.drop(['Ticker', 'Market Capitalization'], axis=1)
@@ -28,8 +29,10 @@ class Fundamentals:
         if update_data:
             print(f'### UPDATING DATA')
             FundamentalData(os.path.join(os.getcwd(), 'models', 'data')).update()
+            self._data = pd.read_csv(self._data_path)
 
         print(f'### ANALYZING FUNDAMENTAL DATA FOR {ticker}')
+        self._data = pd.read_csv(self._data_path)
 
         raw = self._data[self._data['Ticker'] == ticker]
         actual = raw['Market Capitalization']

@@ -9,11 +9,9 @@ import requests
 import torch
 import tweepy as tw
 from GoogleNews import GoogleNews
-from torch.utils.data import DataLoader, SequentialSampler
-from torch.utils.data import TensorDataset
+from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
 from tqdm import tqdm
-from transformers import BertForSequenceClassification
-from transformers import BertTokenizer
+from transformers import BertForSequenceClassification, BertTokenizer
 
 
 class Sentiment:
@@ -148,27 +146,26 @@ class Sentiment:
 
         print(f"{np.round(np.mean(res), 4) * 100}% positive on {len(res)} posts")
 
+    def _run(self, on):
+        input_ids, attention_masks = self._bert_preprocessing(on)
+        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
+        self._eval(dataloader)
+
     def analyze(self, ticker):
         self._ticker = ticker
         self._name = Sentiment.get_symbol(ticker)
 
-        self._reddit()
-        input_ids, attention_masks = self._bert_preprocessing(self._posts)
-        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING REDDIT POSTS ###")
-        self._eval(dataloader)
+        self._reddit()
+        self._run(self._posts)
 
-        self._google()
-        input_ids, attention_masks = self._bert_preprocessing(self._news)
-        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING GOOGLE NEWS ###")
-        self._eval(dataloader)
+        self._google()
+        self._run(self._news)
 
-        self._twitter()
-        input_ids, attention_masks = self._bert_preprocessing(self._tweets)
-        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING TWEETS ###")
-        self._eval(dataloader)
+        self._twitter()
+        self._run(self._tweets)
 
 
 if __name__ == '__main__':

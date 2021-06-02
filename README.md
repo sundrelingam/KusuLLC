@@ -36,6 +36,8 @@ This repository has 2 models for evaluating your stock picks.
 
 In order to run this model, you will need credentials for the Reddit API. Simple instructions can be found here: https://towardsdatascience.com/scraping-reddit-data-1c0af3040768.
 
+You will also need twitter developer access. Simple instructions can be found here: https://www.earthdatascience.org/courses/use-data-open-source-python/intro-to-apis/twitter-data-in-python/
+
 The module can be run as follows: `Sentiment().analyze("PINS")`.
 
 2. `Fundamentals`:

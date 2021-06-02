@@ -1,23 +1,37 @@
-from getpass import getpass
-from GoogleNews import GoogleNews
-import numpy as np
 import os
+import pickle
+from datetime import date, timedelta
+from getpass import getpass
+
+import numpy as np
 import praw
 import requests
-from tqdm import tqdm
-from transformers import BertTokenizer
-from transformers import BertForSequenceClassification
 import torch
+import tweepy as tw
+from GoogleNews import GoogleNews
 from torch.utils.data import DataLoader, SequentialSampler
 from torch.utils.data import TensorDataset
+from tqdm import tqdm
+from transformers import BertForSequenceClassification
+from transformers import BertTokenizer
 
 
 class Sentiment:
-    def __init__(self, model: str = os.path.join(os.getcwd(), 'models', 'pretrained_SA_model')):
+    def __init__(
+            self,
+            model: str = os.path.join(os.getcwd(), 'models', 'pretrained_SA_model'),
+            credentials: str = os.path.join(os.getcwd(), 'credentials.pkl')
+    ):
         self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.batch_size = 32
         self._model = BertForSequenceClassification.from_pretrained(model)
         self._tokenizer = BertTokenizer.from_pretrained(model)
+
+        if os.path.exists(credentials):
+            with open(credentials, 'rb') as fp:
+                self._credentials = pickle.load(fp)
+        else:
+            self._credentials = None
 
     @staticmethod
     def get_symbol(symbol):
@@ -29,15 +43,23 @@ class Sentiment:
             if x['symbol'] == symbol:
                 return x['name']
 
+    def _get_credentials(self, credential):
+        if self._credentials is not None:
+            output = self._credentials.get(credential)
+        else:
+            output = getpass(credential + ':')
+
+        return output
+
     def _reddit(self):
-        self._client_id = getpass(prompt='Client ID:')
-        self._client_secret = getpass(prompt='Client Secret:')
-        self._user_agent = getpass(prompt='User Agent:')
+        client_id = self._get_credentials('client_id')
+        client_secret = self._get_credentials('client_secret')
+        user_agent = self._get_credentials('user_agent')
 
         reddit_api = praw.Reddit(
-            client_id=self._client_id,
-            client_secret=self._client_secret,
-            user_agent=self._user_agent
+            client_id=client_id,
+            client_secret=client_secret,
+            user_agent=user_agent
         )
 
         subreddits = 'stocks+options+wallstreetbets'
@@ -50,6 +72,26 @@ class Sentiment:
         news = GoogleNews(period='1d')
         news.get_news(self._ticker) # @TODO how to also accomodate full name (case insensitive)
         self._news = news.get_texts()
+
+    def _twitter(self):
+        consumer_key = self._get_credentials('consumer_key')
+        consumer_secret = self._get_credentials('consumer_secret')
+        access_token = self._get_credentials('access_token')
+        access_token_secret = self._get_credentials('access_token_secret')
+
+        auth = tw.OAuthHandler(consumer_key, consumer_secret)
+        auth.set_access_token(access_token, access_token_secret)
+        api = tw.API(auth, wait_on_rate_limit=True)
+
+        tweets = tw.Cursor(
+            api.search,
+            q=self._ticker + ' OR ' + self._name,
+            lang="en",
+            since=date.today() - timedelta(days=1)
+        ).items()
+
+        self._tweets = [tweet.text for tweet in tweets]
+
 
     def _bert_preprocessing(self, sentences):
         input_ids = []
@@ -120,6 +162,12 @@ class Sentiment:
         input_ids, attention_masks = self._bert_preprocessing(self._news)
         dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
         print("### ANALYZING GOOGLE NEWS ###")
+        self._eval(dataloader)
+
+        self._twitter()
+        input_ids, attention_masks = self._bert_preprocessing(self._tweets)
+        dataloader = Sentiment.create_datasets(input_ids, attention_masks, self.batch_size)
+        print("### ANALYZING TWEETS ###")
         self._eval(dataloader)
 
 

@@ -1,0 +1,4 @@
+outs:
+- md5: 26522e45b4a551ec456d1818a197c6ea
+  size: 2537
+  path: scaler.pkl

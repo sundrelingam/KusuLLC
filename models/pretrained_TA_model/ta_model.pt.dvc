@@ -1,0 +1,4 @@
+outs:
+- md5: e07743711b8a33787b13d06f7ca0624d
+  size: 45807
+  path: ta_model.pt

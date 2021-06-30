@@ -27,11 +27,11 @@ class Fundamentals:
 
     def analyze(self, ticker: str, update_data: bool = True):
         if update_data:
-            print(f'### UPDATING DATA')
+            print(f'### UPDATING DATA ###')
             FundamentalData(os.path.join(os.getcwd(), 'models', 'data')).update()
             self._data = pd.read_csv(self._data_path)
 
-        print(f'### ANALYZING FUNDAMENTAL DATA FOR {ticker}')
+        print(f'### ANALYZING FUNDAMENTAL DATA FOR {ticker} ###')
         self._data = pd.read_csv(self._data_path)
 
         raw = self._data[self._data['Ticker'] == ticker]

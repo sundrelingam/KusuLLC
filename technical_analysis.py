@@ -160,7 +160,7 @@ class Technicals:
         torch.save(self._model.state_dict(), self._path_to_model)
 
     def analyze(self, ticker):
-        print(f'### ANALYZING TECHNICALS FOR {ticker}')
+        print(f'### ANALYZING TECHNICALS FOR {ticker} ###')
         # get latest technical indicators
         x = Technicals.get_features(ticker).drop(['Close'], axis=1).iloc[[-1]]
         x = self._scaler.transform(x)

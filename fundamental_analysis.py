@@ -1,8 +1,10 @@
-from models.data.fundamental_data import FundamentalData
-import numpy as np
 import os
-import pandas as pd
 import pickle
+
+import numpy as np
+import pandas as pd
+
+from models.data.fundamental_data import FundamentalData
 
 
 class Fundamentals:

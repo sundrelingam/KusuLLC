@@ -1,14 +1,15 @@
 import datetime
-import numpy as np
 import os
-import pandas as pd
 import random
 import time
+
+import numpy as np
+import pandas as pd
 import torch
-from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
+from torch.utils.data import DataLoader, RandomSampler
 from torch.utils.data import TensorDataset, random_split
-from transformers import BertTokenizer
 from transformers import BertForSequenceClassification, AdamW
+from transformers import BertTokenizer
 from transformers import get_linear_schedule_with_warmup
 
 

@@ -1,10 +1,12 @@
-from .data.fundamental_data import FundamentalData
 import os
-import pandas as pd
 import pickle
+
+import pandas as pd
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.impute import SimpleImputer
 from sklearn.model_selection import GridSearchCV
+
+from .data.fundamental_data import FundamentalData
 
 
 class FundamentalTrainer:

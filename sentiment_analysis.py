@@ -1,7 +1,6 @@
 import os
-import pickle
 from datetime import date, timedelta
-from getpass import getpass
+from os.path import join, dirname
 
 import numpy as np
 import praw
@@ -9,6 +8,7 @@ import requests
 import torch
 import tweepy as tw
 from GoogleNews import GoogleNews
+from dotenv import load_dotenv
 from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
 from tqdm import tqdm
 from transformers import BertForSequenceClassification, BertTokenizer
@@ -17,19 +17,15 @@ from transformers import BertForSequenceClassification, BertTokenizer
 class Sentiment:
     def __init__(
             self,
-            model: str = os.path.join(os.getcwd(), 'models', 'pretrained_SA_model'),
-            credentials: str = os.path.join(os.getcwd(), 'credentials.pkl')
+            model: str = os.path.join(os.getcwd(), 'models', 'pretrained_SA_model')
     ):
         self._device = 'cuda' if torch.cuda.is_available() else 'cpu'
         self.batch_size = 32
         self._model = BertForSequenceClassification.from_pretrained(model)
         self._tokenizer = BertTokenizer.from_pretrained(model)
 
-        if os.path.exists(credentials):
-            with open(credentials, 'rb') as fp:
-                self._credentials = pickle.load(fp)
-        else:
-            self._credentials = None
+        dotenv_path = join(dirname(__file__), '.env')
+        load_dotenv(dotenv_path)
 
     @staticmethod
     def get_symbol(symbol):
@@ -41,23 +37,16 @@ class Sentiment:
             if x['symbol'] == symbol:
                 return x['name']
 
-    def _get_credentials(self, credential):
-        if self._credentials is not None:
-            output = self._credentials.get(credential)
-        else:
-            output = getpass(credential + ':')
-
-        return output
-
     def _reddit(self):
-        client_id = self._get_credentials('client_id')
-        client_secret = self._get_credentials('client_secret')
-        user_agent = self._get_credentials('user_agent')
+
+        self._client_id = os.environ.get("client_id")
+        self._client_secret = os.environ.get("client_secret")
+        self._user_agent = os.environ.get("user_agent")
 
         reddit_api = praw.Reddit(
-            client_id=client_id,
-            client_secret=client_secret,
-            user_agent=user_agent
+            client_id=self._client_id,
+            client_secret=self._client_secret,
+            user_agent=self._user_agent
         )
 
         subreddits = 'stocks+options+wallstreetbets'
@@ -72,13 +61,14 @@ class Sentiment:
         self._news = news.get_texts()
 
     def _twitter(self):
-        consumer_key = self._get_credentials('consumer_key')
-        consumer_secret = self._get_credentials('consumer_secret')
-        access_token = self._get_credentials('access_token')
-        access_token_secret = self._get_credentials('access_token_secret')
 
-        auth = tw.OAuthHandler(consumer_key, consumer_secret)
-        auth.set_access_token(access_token, access_token_secret)
+        self._consumer_key = os.environ.get("consumer_key")
+        self._consumer_secret = os.environ.get("consumer_secret")
+        self._access_token = os.environ.get("access_token")
+        self._access_token_secret = os.environ.get("access_token_secret")
+
+        auth = tw.OAuthHandler(self._consumer_key, self._consumer_secret)
+        auth.set_access_token(self._access_token, self._access_token_secret)
         api = tw.API(auth, wait_on_rate_limit=True)
 
         tweets = tw.Cursor(

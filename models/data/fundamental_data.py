@@ -70,5 +70,6 @@ class FundamentalData:
         self._calculate_market_cap()
         self.save()
 
+
 if __name__ == '__main__':
     FundamentalData().update()

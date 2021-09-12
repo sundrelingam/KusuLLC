@@ -9,5 +9,6 @@ class Hydra:
         Fundamentals().analyze(ticker)
         Technicals().analyze(ticker)
 
+
 if __name__ == '__main__':
     Hydra('PINS')

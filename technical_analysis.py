@@ -1,5 +1,6 @@
 import os
 import pickle
+import warnings
 
 import bs4 as bs
 import pandas as pd
@@ -64,9 +65,12 @@ class Technicals:
     def get_features(ticker, period='3mo'):
         prices = yf.Ticker(ticker).history(period=period)
         try:
-            df = add_all_ta_features(
-                prices, open="Open", high="High", low="Low", close="Close", volume="Volume", fillna=True
-            )
+            with warnings.catch_warnings():
+                # some ta indicators cannot be calculated at the edges of the window
+                warnings.simplefilter("ignore")
+                df = add_all_ta_features(
+                    prices, open="Open", high="High", low="Low", close="Close", volume="Volume", fillna=True
+                )
         except:
             return
 
@@ -206,6 +210,7 @@ class Data(Dataset):
 
     def __len__(self):
         return len(self.X_data)
+
 
 if __name__ == '__main__':
     Technicals().analyze("PINS")

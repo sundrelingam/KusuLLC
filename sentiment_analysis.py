@@ -4,9 +4,9 @@ from os.path import join, dirname
 
 import numpy as np
 import praw
-import requests
 import torch
 import tweepy as tw
+import yfinance as yf
 from GoogleNews import GoogleNews
 from dotenv import load_dotenv
 from torch.utils.data import DataLoader, SequentialSampler, TensorDataset
@@ -28,14 +28,10 @@ class Sentiment:
         load_dotenv(dotenv_path)
 
     @staticmethod
-    def get_symbol(symbol):
-        url = "http://d.yimg.com/autoc.finance.yahoo.com/autoc?query={}&region=1&lang=en".format(symbol)
+    def get_full_name(symbol):
+        name = yf.Ticker(symbol).info["longName"]
 
-        result = requests.get(url).json()
-
-        for x in result['ResultSet']['Result']:
-            if x['symbol'] == symbol:
-                return x['name']
+        return name
 
     def _reddit(self):
 
@@ -143,7 +139,7 @@ class Sentiment:
 
     def analyze(self, ticker):
         self._ticker = ticker
-        self._name = Sentiment.get_symbol(ticker)
+        self._name = Sentiment.get_full_name(ticker)
 
         print("### ANALYZING REDDIT POSTS ###")
         self._reddit()

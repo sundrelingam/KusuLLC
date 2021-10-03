@@ -37,17 +37,21 @@ class Fundamentals:
         self._data = pd.read_csv(self._data_path)
 
         raw = self._data[self._data['Ticker'] == ticker]
-        actual = raw['Market Capitalization']
-        preprocessed = self._preprocess(raw)
 
-        ratio = self._model.predict(preprocessed) / actual
-
-        if ratio.item() > 1:
-            diff = np.round(ratio.item() - 1, 4) * 100
+        if raw.empty:
+            print(f'No fundamental data available for {ticker} :(')
         else:
-            diff = np.round(1 - ratio.item(), 4) * 100
+            actual = raw['Market Capitalization']
+            preprocessed = self._preprocess(raw)
 
-        print(f'Predicted Market Cap is {diff}% {"higher" if ratio.item() > 1 else "lower"} than actual Market Cap.')
+            ratio = self._model.predict(preprocessed) / actual
+
+            if ratio.item() > 1:
+                diff = np.round(ratio.item() - 1, 4) * 100
+            else:
+                diff = np.round(1 - ratio.item(), 4) * 100
+
+            print(f'Predicted Market Cap is {diff}% {"higher" if ratio.item() > 1 else "lower"} than actual Market Cap.')
 
 
 if __name__ == '__main__':

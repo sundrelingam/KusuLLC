@@ -46,10 +46,10 @@ This repository has 3 models for evaluating your stock picks.
 
 ## TL;DR
 
-All the above models can be run using the `HYDRA` wrapper as follows:
+All the above models can be run using the `HYDRA.analyze` wrapper as follows:
 
 ```
-Hydra("PINS")
+analyze("PINS")
 ```
 
 ## Additional Resources

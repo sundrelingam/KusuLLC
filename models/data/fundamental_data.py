@@ -2,12 +2,17 @@ import os
 
 import pandas as pd
 import simfin as sf
+from dotenv import load_dotenv
 
 
 class FundamentalData:
     def __init__(self, dir: str = os.getcwd()):
         self._dir = dir
-        sf.set_api_key('free')
+
+        dotenv_path = os.path.join('.env')
+        load_dotenv(dotenv_path)
+
+        sf.set_api_key('d5I8fvwmF29HUbsOwa8l3bUovp6L1NcX')
         sf.set_data_dir(os.path.join(self._dir, 'simfin'))
 
         self._industries = sf.load_industries()

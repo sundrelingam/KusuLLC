@@ -1,6 +1,5 @@
 import os
 from datetime import date, timedelta
-from os.path import join, dirname
 
 import numpy as np
 import praw
@@ -24,7 +23,7 @@ class Sentiment:
         self._model = BertForSequenceClassification.from_pretrained(model)
         self._tokenizer = BertTokenizer.from_pretrained(model)
 
-        dotenv_path = join(dirname(__file__), '.env')
+        dotenv_path = os.path.join('.env')
         load_dotenv(dotenv_path)
 
     @staticmethod

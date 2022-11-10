@@ -51,7 +51,3 @@ All the above models can be run using the `HYDRA.analyze` wrapper as follows:
 ```
 analyze("PINS")
 ```
-
-## Additional Resources
-
-For additional "Kusu" based investing advice, please read [The Kusu Investor](https://docs.google.com/document/d/1rCxaUnPtl0IX3S19bTvKNj58g32ywV0KJtv--sGWaGk/edit?usp=drivesdk) currently in its first edition (by invite only).
